@@ -1,7 +1,7 @@
 import pygame
 import os
 import random
-import tetris
+import TetClasses
 from buttons import Button
 
 pygame.font.init()
@@ -61,8 +61,8 @@ def game_loop():
         if players == 1:
             
             # Create empty boards for player and AI
-            PlayerBoard = tetris.board(200, 700)
-            Ai_board = tetris.board(800, 700)
+            PlayerBoard = TetClasses.board(200, 700)
+            Ai_board = TetClasses.board(800, 700)
 
             boards.append(PlayerBoard, Ai_board)
 
