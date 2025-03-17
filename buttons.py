@@ -1,31 +1,36 @@
 import pygame
 import os
 
+SCALE = 2.65
+
+
 class Button:
-    def __init__(self, cords: tuple, sprites: list, scale: int, func):
+    def __init__(self, cords: tuple, rest: str, hover: str):
         """
         cords: (x, y) coordinates, auto-centered.
-        sprites: list of 2 images [rest_sprite, hover_sprite].
-        scale: scaling factor for the button size.
-        func: function to execute when button is clicked.
+        rest, hover: the sprites for when their cursor is over the button
         """
-        self.scale = scale
-        self.rest_sprite = pygame.image.load(os.path.join("Tetris_assets", sprites[0]))
-        self.hover_sprite = pygame.image.load(os.path.join("Tetris_assets", sprites[1]))
+
+        self.rest_sprite = pygame.image.load(os.path.join("Tetris_assets\Buttons", rest))
+        self.hover_sprite = pygame.image.load(os.path.join("Tetris_assets\Buttons", hover))
         
         # Pre-scale images 
         self.rest_sprite = pygame.transform.scale(self.rest_sprite, 
-                                                  (self.rest_sprite.get_width() * scale, 
-                                                   self.rest_sprite.get_height() * scale))
+                                                  (self.rest_sprite.get_width() * SCALE, 
+                                                   self.rest_sprite.get_height() * SCALE))
         self.hover_sprite = pygame.transform.scale(self.hover_sprite, 
-                                                   (self.hover_sprite.get_width() * scale, 
-                                                    self.hover_sprite.get_height() * scale))
+                                                   (self.hover_sprite.get_width() * SCALE, 
+                                                    self.hover_sprite.get_height() * SCALE))
         
+        # Size after scaling
         self.width = self.rest_sprite.get_width()
         self.height = self.rest_sprite.get_height()
+
         self.x = cords[0] - self.width / 2
         self.y = cords[1] - self.height / 2
-        self.func = func
+
+        # The difference in size between the two images
+        self.image_dif = (self.hover_sprite.get_width() - self.width, self.hover_sprite.get_height() - self.height)
 
     def is_hovered(self) -> bool:
 
@@ -39,7 +44,8 @@ class Button:
         if self.is_hovered():
             WINDOW.blit(self.hover_sprite, (self.x, self.y))
         else:
-            WINDOW.blit(self.rest_sprite, (self.x, self.y))
+            # Edits the drawing to account for change in size. Makes buttons scale from the origin
+            WINDOW.blit(self.rest_sprite, (self.x + self.image_dif[0]/2, self.y + self.image_dif[1]/2))
 
     def is_clicked(self, previous_click) -> bool:
         
@@ -50,12 +56,23 @@ class Button:
             return True
         
         return False
+    
 
-    def execute(self) -> None:
-        """Execute the assigned function or code string."""
+class switch:
 
-        if callable(self.func):  # If it's a function, call it
-            self.func()
+    def __init__(self, cords: tuple, rest: str, hover: str, switch_rest: str, switch_hover: str):
+        super(Button).__init__(cords, rest, hover)
 
-        elif isinstance(self.func, str):  # If it's a string, execute the code
-            exec(self.func)  # Note: exec() will execute the code as Python code
+        self.switch_rest_sprite = pygame.image.load(os.path.join("Tetris_assets\Buttons", switch_rest))
+        self.switch_hover_sprite = pygame.image.load(os.path.join("Tetris_assets\Buttons", switch_hover))
+
+        self.switch_rest_sprite = pygame.transform.scale(self.switch_rest_sprite, 
+                                                  (self.switch_rest_sprite.get_width() * SCALE, 
+                                                   self.switch_rest_sprite.get_height() * SCALE))
+        self.switch_hover_sprite = pygame.transform.scale(self.switch_hover_sprite, 
+                                                   (self.switch_hover_sprite.get_width() * SCALE, 
+                                                    self.switch_hover_sprite.get_height() * SCALE))
+        
+    def switch(self):
+        self.switch_rest_sprite, self.rest_sprite = self.rest_sprite, self.switch_rest_sprite
+        self.switch_hover_sprite, self.hover_sprite = self.hover_sprite, self.switch_hover_sprite
