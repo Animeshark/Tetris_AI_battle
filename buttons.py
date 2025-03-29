@@ -58,10 +58,10 @@ class Button:
         return False
     
 
-class switch:
+class Switch(Button):
 
     def __init__(self, cords: tuple, rest: str, hover: str, switch_rest: str, switch_hover: str):
-        super(Button).__init__(cords, rest, hover)
+        super().__init__(cords, rest, hover)
 
         self.switch_rest_sprite = pygame.image.load(os.path.join("Tetris_assets\Buttons", switch_rest))
         self.switch_hover_sprite = pygame.image.load(os.path.join("Tetris_assets\Buttons", switch_hover))
@@ -73,6 +73,52 @@ class switch:
                                                    (self.switch_hover_sprite.get_width() * SCALE, 
                                                     self.switch_hover_sprite.get_height() * SCALE))
         
+        self.state = False
+        
     def switch(self):
         self.switch_rest_sprite, self.rest_sprite = self.rest_sprite, self.switch_rest_sprite
         self.switch_hover_sprite, self.hover_sprite = self.hover_sprite, self.switch_hover_sprite
+
+
+    def is_clicked(self, previous_click) -> bool:
+        
+        """Check if the button is clicked."""
+
+        if pygame.mouse.get_pressed()[0] and self.is_hovered() and previous_click == False:
+            self.state = not self.state
+
+            return True
+        
+        return False
+
+class Slider:
+
+    def __init__(self, cords: tuple):
+
+        
+        # slider cords
+        self.x = cords[0]
+        self.y = cords[1]
+
+        # ball cords
+        self.ballx = self.x
+        self.bally = self.y
+
+        # what percent (multiplier) of the slider is the ball across. Left side is 0 right side is 1
+        self.percent = 0
+        
+        # loading and scaling images
+        self.rest_ball_sprite = pygame.image.load(os.path.join("Tetris_assets\Buttons", "ball_rest"))
+        self.held_ball_sprite = pygame.image.load(os.path.join("Tetris_assets\Buttons", "ball_held"))
+        self.rest_ball_sprite = pygame.transform.scale(self.rest_ball_sprite, 
+                                                  (self.rest_ball_sprite.get_width() * SCALE, 
+                                                   self.rest_ball_sprite.get_height() * SCALE))
+        self.held_ball_sprite = pygame.transform.scale(self.held_ball_sprite, 
+                                                   (self.held_ball_sprite.get_width() * SCALE, 
+                                                    self.held_ball_sprite.get_height() * SCALE))
+
+    def draw(self):
+        pass       
+
+    def is_clicked(self):
+        pass

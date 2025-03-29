@@ -8,7 +8,7 @@ pygame.font.init()
 
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 800
-WINDOW = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Tetris AI")
 HOTKEYS = {
     "P1":{
@@ -55,14 +55,16 @@ def Compute(board) -> dict:
 
 def game_loop():
     
-    bg = pygame.transform.scale(pygame.image.load(os.path.join("Tetris_assets", "menu_background.png")), (SCREEN_HEIGHT, SCREEN_WIDTH))
+    global window
+
+    bg = pygame.transform.scale(pygame.image.load(os.path.join("Tetris_assets/Backgrounds/mountain_night.jpg")), (SCREEN_HEIGHT, SCREEN_WIDTH))
 
     def draw_screen(boards: list):
          
-        WINDOW.blit(bg, (0,0))
+        window.blit(bg, (0,0))
 
         for board in boards:
-            board.draw(WINDOW)
+            board.draw(window)
 
         pygame.display.update()
 
@@ -72,7 +74,7 @@ def game_loop():
     #Initialising
     game_state = "game_loop"
 
-    WINDOW.fill((0, 0, 0))
+    window.fill((0, 0, 0))
 
     # Create empty boards for player and AI
         
@@ -104,32 +106,28 @@ def game_loop():
 
 def options_screen() -> None:
 
-    WINDOW.fill((0, 0, 0))
+    global window
+
+    window.fill((0, 0, 0))
 
     game_state = "options"
     leftdown = True
-    options_screen_bg = pygame.transform.scale(pygame.image.load(os.path.join("Tetris_assets", "menu_background.png")), (SCREEN_WIDTH, SCREEN_HEIGHT))
+    options_screen_bg = pygame.transform.scale(pygame.image.load(os.path.join("Tetris_assets/Backgrounds/tree_mountain.jpg")), (SCREEN_WIDTH, SCREEN_HEIGHT))
 
-    back = Button((0 + 120, SCREEN_HEIGHT - 60),
-                             "back_button_rest.png", "back_button_hover.png",
-    ) # Back button
+    back = Button((120, SCREEN_HEIGHT - 60), "back_button_rest.png", "back_button_hover.png") # Back button
     
-    exit = Button((SCREEN_WIDTH - 120, SCREEN_HEIGHT - 60),
-                "exit_button_rest.png", "exit_button_hover.png")  # Exit button
+    exit = Button((SCREEN_WIDTH - 120, SCREEN_HEIGHT - 60), "exit_button_rest.png", "exit_button_hover.png")  # Exit button
     
+    fullscreen = Switch((120, 120), "Null.png", "Null.png", "Null.png", "Null.png")
 
-    screen_buttons = [back, exit]
-    
-
-
-    def draw_screen(bg, buttons: list) -> None:
+    def draw_screen(bg, *buttons: object) -> None:
    
         # Game logic, drawing etc.
         
-        WINDOW.blit(bg, (0, 0))
+        window.blit(bg, (0, 0))
 
         for button in buttons:
-            button.draw(WINDOW)
+            button.draw(window)
         
         pygame.display.update()  # Update the window
 
@@ -137,11 +135,19 @@ def options_screen() -> None:
 
         game_state = "exit" if is_closed() else game_state
 
+        
+
         if back.is_clicked(leftdown):
             game_state = 'main_menu'
 
         elif exit.is_clicked(leftdown):
             game_state = 'exit'
+
+        if fullscreen.is_clicked(leftdown):
+            if fullscreen.state:
+                window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
+            else:
+                window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
         leftdown = pygame.mouse.get_pressed()[0]
         
@@ -149,42 +155,39 @@ def options_screen() -> None:
 
 
 
-
-
-
-        draw_screen(options_screen_bg, screen_buttons)
+        draw_screen(options_screen_bg, back, exit, fullscreen)
+        clock.tick(FPS)
 
     return game_state
 
 
 def main_menu():
 
-    WINDOW.fill((0, 0, 0))
+    global window
+
+    window.fill((0, 0, 0))
 
 
-    main_menu_bg = pygame.transform.scale(pygame.image.load(os.path.join("Tetris_assets", "menu_background.png")), (SCREEN_WIDTH, SCREEN_HEIGHT))
+    main_menu_bg = pygame.transform.scale(pygame.image.load(os.path.join("Tetris_assets/Backgrounds/tree_set.jpg")), (SCREEN_WIDTH, SCREEN_HEIGHT))
     game_state = 'main_menu'
 
     
-    start = Button((SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2),
-                "start_button_rest.png", "start_button_hover.png") # Start button
+    start = Button((SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2), "start_button_rest.png", "start_button_hover.png") # Start button
 
-    options = Button((SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 120),
-                "option_button_rest.png", "option_button_hover.png") # Options button
+    options = Button((SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 120), "option_button_rest.png", "option_button_hover.png") # Options button
 
-    exit = Button((SCREEN_WIDTH - 120, SCREEN_HEIGHT - 60),
-                "exit_button_rest.png", "exit_button_hover.png")  # Exit button
+    exit = Button((SCREEN_WIDTH - 120, SCREEN_HEIGHT - 60), "exit_button_rest.png", "exit_button_hover.png")  # Exit button
     
-    screen_buttons = [start, options, exit]
+    
     leftdown = True #remembers if mouse was clicked in previous frame
 
-    def draw_screen(bg, buttons: list) -> None:
+    def draw_screen(bg, *buttons: object) -> None:
    
         # Game logic, drawing etc.
         
-        WINDOW.blit(bg, (0, 0))
+        window.blit(bg, (0, 0))
         for button in buttons:
-            button.draw(WINDOW)
+            button.draw(window)
         
         pygame.display.update()  # Update the window
 
@@ -209,7 +212,7 @@ def main_menu():
 
 
 
-        draw_screen(main_menu_bg, screen_buttons)  # Redraw the screen
+        draw_screen(main_menu_bg, start, options, exit)  # Redraw the screen
         clock.tick(FPS)
 
     return game_state  # End the game
